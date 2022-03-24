@@ -1,5 +1,6 @@
 const fs = require('fs');
 const news = require('./news.js');
+const data = require('./data.json');
 
 for (var i = 0; i < 20; i++) {
     console.log("")
@@ -16,6 +17,7 @@ console.log("#                 https://github.com/DevFlock/ukraine-news-bot     
 console.log("#                                                                             #")
 console.log("###############################################################################")
 console.log("Started")
+console.log("Version: " + data.version)
 console.log("")
 
 //make news directory

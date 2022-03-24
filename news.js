@@ -8,7 +8,7 @@ const debug = false
 var newsJSON = {}
 
 async function getJSONfile() {
-    newsJSON = require('./news.json');
+    newsJSON = require('./data.json');
 }
 
 async function getData() {
@@ -167,7 +167,7 @@ async function getData() {
             }
 
             //save to file
-            fs.writeFile('./news.json', JSON.stringify(newsJSON), (err) => {
+            fs.writeFile('./data.json', JSON.stringify(newsJSON), (err) => {
                 if (err) throw err;
                 console.log('News saved to file');
             });
