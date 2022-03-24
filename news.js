@@ -3,6 +3,8 @@ const fs = require('fs');
 const news = require('./news');
 const fetch = require('node-fetch');
 
+const debug = false
+
 var newsJSON = {}
 
 async function getJSONfile() {
@@ -39,27 +41,27 @@ async function getData() {
                 console.log("No image")
             }
 
-            console.log(latest)
+            if (debug) console.log(latest)
             for (item in latest["body"]) {
                 item = latest["body"][item]
 
                 if (item.name == "paragraph") {
-                    console.log("paragraph")
+                    if (debug) console.log("paragraph")
 
                     for (child in item.children) {
                         child = item.children[child]
-                        console.log("Child:")
-                        console.log(child)
+                        if (debug) console.log("Child:")
+                        if (debug) console.log(child)
 
                         if (child.name == "text") {
-                            console.log("Text:")
-                            console.log(child.text)
+                            if (debug) console.log("Text:")
+                            if (debug) console.log(child.text)
                             content.push(child.text)
                         } else if (child.name == "link") {
-                            console.log("link")
+                            if (debug) console.log("link")
                             text = child.children[0].children[0].text;
                             text_url = child.children[2].attributes[1].value;
-                            console.log(text_url)
+                            if (debug) console.log(text_url)
                             if (text_url.startsWith("https://www.bbc.com/news/live/world-europe-") || text_url.startsWith("https://www.bbc.com/news/world-europe-")) {
                                 newsJSON.news_url = text_url.split("-")[2];
                                 console.log(`Changing news url to ${newsJSON.news_url}`);
@@ -67,7 +69,7 @@ async function getData() {
                             }
                             content.push(`[${text}](${text_url})`);
                         } else if (child.name == "bold") {
-                            console.log("bold")
+                            if (debug) console.log("bold")
                             content.push("**" + child.children[0].text.trim() + "**");
                         }
                     }
@@ -120,7 +122,7 @@ async function getData() {
                             content.push(`[Twitter](${tUrl})\n\n`)
                         }
                     } catch (e) {
-                        console.log("No twitter embed")
+                        if (debug) console.log("No twitter embed")
                     }
                 }
             }
@@ -152,7 +154,7 @@ async function getData() {
                     if (file.includes(title)) {
                         console.log("News already exists")
                     } else {
-                        var toAppent = `Title: ${title}\n\n${content.trim()}\n${imageUrl}\n\nIs breaking: ${isBreaking}\n\nDate: ${updated}\n\nLink: https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}\n\n\n\n`;
+                        var toAppent = `## Title: ${title}\n\n${content.trim()}\n${imageUrl}\n\nIs breaking: ${isBreaking}\n\nDate: ${updated}\n\nLink: https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}\n\n\n\n`;
                         fs.appendFileSync("./news/" + fileName, toAppent);
                         console.log("./news/" + fileName)
                     }
