@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "name": "ukrainenews",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "AirplaneGoBrr",
+  "license": "ISC",
+  "description": ""
+}
