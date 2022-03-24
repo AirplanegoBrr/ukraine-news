@@ -154,7 +154,7 @@ async function getData() {
                     if (file.includes(title)) {
                         console.log("News already exists")
                     } else {
-                        var toAppent = `## Title: ${title}\n\n${content.trim()}\n${imageUrl}\n\nIs breaking: ${isBreaking}\n\nDate: ${updated}\n\nLink: https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}\n\n\n\n`;
+                        var toAppent = `## Title: ${title}\n\n${content.trim()}\n${imageUrl}\n\nIs breaking: ${isBreaking}\n\nDate: ${updated}\n\nLink: https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}\n\n![Image](${imageUrl})\n\n\n\n`;
                         fs.appendFileSync("./news/" + fileName, toAppent);
                         console.log("./news/" + fileName)
                     }
