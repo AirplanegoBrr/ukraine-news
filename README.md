@@ -2,7 +2,7 @@
 
 Get news about the war in Ukraine!
 
-This bot is using a modified version of DevFlocks discord bot! You can find his python bot [here](https://github.com/DevFlock/ukraine-news-bot)
+## This bot is using a modified version of DevFlocks discord bot! You can find his python bot [here](https://github.com/DevFlock/ukraine-news-bot)
 
 This uses bbc.co.uk and there API.
 
