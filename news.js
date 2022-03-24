@@ -15,132 +15,163 @@ async function getData() {
     //console.log(url)
     var response = await fetch(url);
     response.json().then(data => {
-        var latest = data.payload[0].body.results[0]
-        if (latest["assetId"] == newsJSON.assetId) {
-            console.log("No new news")
-            return;
-        }
-        newsJSON.assetId = latest["assetId"];
-
-        var title = latest["title"];
-        var content = []
-        var imageUrl = ""
-        var isBreaking = latest["options"]["isBreakingNews"];
-        var post_locator = latest["locator"];
-        var updated = latest["lastUpdated"];
-
         try {
-            for (imageKey in latest["media"]["images"]["body"]) {
-                imageUrl = latest["media"]["images"]["body"][imageKey]["href"]
-                break
+            var latest = data.payload[0].body.results[0]
+            if (latest["assetId"] == newsJSON.assetId) {
+                console.log("No new news")
+                return;
             }
-        } catch (e) {
-            console.log("No image")
-        }
+            newsJSON.assetId = latest["assetId"];
 
-        console.log(latest)
-        for (item in latest["body"]) {
-            item = latest["body"][item]
+            var title = latest["title"];
+            var content = []
+            var imageUrl = ""
+            var isBreaking = latest["options"]["isBreakingNews"];
+            var post_locator = latest["locator"];
+            var updated = latest["lastUpdated"];
 
-            if (item.name == "paragraph") {
-                console.log("paragraph")
-
-                for (child in item.children) {
-                    child = item.children[child]
-                    console.log("Child:")
-                    console.log(child)
-
-                    if (child.name == "text") {
-                        console.log("Text:")
-                        console.log(child.text)
-                        content.push(child.text)
-                    } else if (child.name == "link") {
-                        console.log("link")
-                        text = child.children[0].children[0].text;
-                        text_url = child.children[2].attributes[1].value;
-                        console.log(text_url)
-                        if (text_url.startsWith("https://www.bbc.com/news/live/world-europe-") || text_url.startsWith("https://www.bbc.com/news/world-europe-")) {
-                            newsJSON.news_url = text_url.split("-")[2];
-                            console.log(`Changing news url to ${newsJSON.news_url}`);
-                            break
-                        }
-                        content.push(`[${text}](${text_url})`);
-                    } else if (child.name == "bold") {
-                        console.log("bold")
-                        content.push("**" + child.children[0].text.trim() + "**");
-                    }
+            try {
+                for (imageKey in latest["media"]["images"]["body"]) {
+                    imageUrl = latest["media"]["images"]["body"][imageKey]["href"]
+                    break
                 }
-                content.push("\n\n")
-            } else if (item.name == "list") {
+            } catch (e) {
+                console.log("No image")
+            }
 
-                for (child in item.children) {
-                    child = item.children[child]
-                    content.push(" . ")
-                    for (subChild in child.children) {
-                        subChild = child.children[subChild]
-                        if (subChild.name == "text") {
-                            content.push(subChild.text.trim() + " ")
-                        } else if (subChild.name == "link") {
-                            text = subChild.children[0].children[0].text;
-                            text_url = subChild.children[2].attributes[1].value;
-                            if (text_url.startsWith("https://www.bbc.co.uk/news/live/world-europe-") || text_url.startsWith("https://www.bbc.co.uk/news/world-europe-")) {
-                                newsJSON.news_url = text_url.split("-")[5];
+            console.log(latest)
+            for (item in latest["body"]) {
+                item = latest["body"][item]
+
+                if (item.name == "paragraph") {
+                    console.log("paragraph")
+
+                    for (child in item.children) {
+                        child = item.children[child]
+                        console.log("Child:")
+                        console.log(child)
+
+                        if (child.name == "text") {
+                            console.log("Text:")
+                            console.log(child.text)
+                            content.push(child.text)
+                        } else if (child.name == "link") {
+                            console.log("link")
+                            text = child.children[0].children[0].text;
+                            text_url = child.children[2].attributes[1].value;
+                            console.log(text_url)
+                            if (text_url.startsWith("https://www.bbc.com/news/live/world-europe-") || text_url.startsWith("https://www.bbc.com/news/world-europe-")) {
+                                newsJSON.news_url = text_url.split("-")[2];
                                 console.log(`Changing news url to ${newsJSON.news_url}`);
                                 break
                             }
-                            content.push(`[${text}](${text_url})`)
-
-                        } else if (subChild.name == "bold") {
-                            content.push("**" + subChild.children[0].text.trim() + "**")
+                            content.push(`[${text}](${text_url})`);
+                        } else if (child.name == "bold") {
+                            console.log("bold")
+                            content.push("**" + child.children[0].text.trim() + "**");
                         }
                     }
+                    content.push("\n\n")
+                } else if (item.name == "list") {
 
-                }
-                content.push("\n\n")
-            } else if (item.name == "link") {
-                text = item.children[0].children[0].text;
-                text_url = item.children[2].attributes[1].value;
-                if (text_url.startsWith("https://www.bbc.co.uk/news/live/world-europe-") || text_url.startsWith("https://www.bbc.co.uk/news/world-europe-")) {
-                    newsJSON.news_url = text_url.split("-")[5];
-                    console.log(`Changing news url to ${newsJSON.news_url}`);
-                    break
-                }
-                content.push(`[${text}](${text_url})`)
-            } else if (item.name == "video") {
-                content.push("*There is a video, but the bot cannot display it. Please click on the link above to view it.*\n\n")
-            } else if (item.name == "quote") {
-                if (item.children[0].name == "quoteText") {
-                    content.push("\"" + item.children[0].children[0].text.replace("\"", "") + "\"\n\n")
-                }
-            } else if (item.name == "embed"){
-                try {
-                    if (item.children[0].children[0].text == "twitter"){
-                        tUrl = item.children[1].children[0].text
-                        content.push(`[Twitter](${tUrl})\n\n`)
+                    for (child in item.children) {
+                        child = item.children[child]
+                        content.push(" . ")
+                        for (subChild in child.children) {
+                            subChild = child.children[subChild]
+                            if (subChild.name == "text") {
+                                content.push(subChild.text.trim() + " ")
+                            } else if (subChild.name == "link") {
+                                text = subChild.children[0].children[0].text;
+                                text_url = subChild.children[2].attributes[1].value;
+                                if (text_url.startsWith("https://www.bbc.co.uk/news/live/world-europe-") || text_url.startsWith("https://www.bbc.co.uk/news/world-europe-")) {
+                                    newsJSON.news_url = text_url.split("-")[5];
+                                    console.log(`Changing news url to ${newsJSON.news_url}`);
+                                    break
+                                }
+                                content.push(`[${text}](${text_url})`)
+
+                            } else if (subChild.name == "bold") {
+                                content.push("**" + subChild.children[0].text.trim() + "**")
+                            }
+                        }
+
                     }
-                } catch (e) {
-                    console.log("No twitter embed")
+                    content.push("\n\n")
+                } else if (item.name == "link") {
+                    text = item.children[0].children[0].text;
+                    text_url = item.children[2].attributes[1].value;
+                    if (text_url.startsWith("https://www.bbc.co.uk/news/live/world-europe-") || text_url.startsWith("https://www.bbc.co.uk/news/world-europe-")) {
+                        newsJSON.news_url = text_url.split("-")[5];
+                        console.log(`Changing news url to ${newsJSON.news_url}`);
+                        break
+                    }
+                    content.push(`[${text}](${text_url})`)
+                } else if (item.name == "video") {
+                    content.push("*There is a video, but the bot cannot display it. Please click on the link above to view it.*\n\n")
+                } else if (item.name == "quote") {
+                    if (item.children[0].name == "quoteText") {
+                        content.push("\"" + item.children[0].children[0].text.replace("\"", "") + "\"\n\n")
+                    }
+                } else if (item.name == "embed") {
+                    try {
+                        if (item.children[0].children[0].text == "twitter") {
+                            tUrl = item.children[1].children[0].text
+                            content.push(`[Twitter](${tUrl})\n\n`)
+                        }
+                    } catch (e) {
+                        console.log("No twitter embed")
+                    }
                 }
             }
+
+            console.log(`New news: ${title}`);
+            //convert the Array to a string
+            content.forEach(function (item, index, array) {
+                array[index].trim()
+            });
+            content = content.join(" ");
+            console.log(content);
+            console.log(`${imageUrl}`);
+            console.log(`${isBreaking}`);
+            console.log(`https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}`);
+            console.log(`${updated}`);
+            if (newsJSON.fileSaving) {
+                try {
+                    var dateTime = updated.split("T");
+                    console.log(dateTime)
+                    var DMY = dateTime[0].split("-");
+                    console.log(DMY)
+                    var fileName = `${DMY[2]}-${DMY[1]}-${DMY[0]}.md`;
+                    //check if fileName exists if not create it
+                    if (!fs.existsSync("./news/" + fileName)) {
+                        fs.writeFileSync("./news/" + fileName, `# News for ${DMY[2]}-${DMY[1]}-${DMY[0]}\n\n`);
+                    }
+                    //check if the file already has the news
+                    var file = fs.readFileSync("./news/" + fileName, "utf8");
+                    if (file.includes(title)) {
+                        console.log("News already exists")
+                    } else {
+                        var toAppent = `Title: ${title}\n\n${content.trim()}\n${imageUrl}\n\nIs breaking: ${isBreaking}\n\nDate: ${updated}\n\nLink: https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}\n\n\n\n`;
+                        fs.appendFileSync("./news/" + fileName, toAppent);
+                        console.log("./news/" + fileName)
+                    }
+
+
+                } catch (e) {
+                    console.log("Error trying to save news file")
+                    console.log(e)
+                }
+            }
+
+            //save to file
+            fs.writeFile('./news.json', JSON.stringify(newsJSON), (err) => {
+                if (err) throw err;
+                console.log('News saved to file');
+            });
+        } catch (e) {
+            console.log(e)
         }
-
-        console.log(`New news: ${title}`);
-        //convert the Array to a string
-        content.forEach(function (item, index, array) {
-            array[index].trim()
-        });
-        content = content.join(" ");
-        console.log(content);
-        console.log(`${imageUrl}`);
-        console.log(`${isBreaking}`);
-        console.log(`https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}`);
-        console.log(`${updated}`);
-
-        //save to file
-        fs.writeFile('./news.json', JSON.stringify(newsJSON), (err) => {
-            if (err) throw err;
-            console.log('News saved to file');
-        });
     });
 }
 

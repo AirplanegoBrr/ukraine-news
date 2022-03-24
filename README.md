@@ -21,3 +21,6 @@ I do plan to support backdoors (Such as onion) to fetch API requests.
  - [ ] Support onion version on BBC
 
 If you have any more ideas please make an issue :)
+
+
+This repo will auto save news to a file using the DMY format [More info](https://en.wikipedia.org/wiki/Date_and_time_notation_in_Ukraine) (This can be disabled)
