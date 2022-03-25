@@ -1,4 +1,5 @@
 const fs = require('fs');
+//const chalk = require('chalk');
 const news = require('./news.js');
 const data = require('./data.json');
 
@@ -27,18 +28,19 @@ async function run() {
     console.log("Grabbing news")
     try {
         a = await news.getData()
-        if (a){
+        if (a) {
             console.log(a)
         } else {
             console.log("No news!")
         }
-    } catch (err) {
-        console.log(chalk.red(err));
+    } catch (e) {
+        console.log(e)
     }
+
     console.log("")
 }
 
 run();
 setInterval(() => {
     run();
-}, 15*1000);
+}, 15 * 1000);

@@ -200,7 +200,10 @@ async function getData() {
             return resolve(jsonBack)
         } catch (e) {
             console.log(e)
-            return reject(null)
+            newsJSON.news_url = 60856533
+            fs.writeFileSync("./data.json", JSON.stringify(newsJSON));
+
+            return reject(e)
         }
     });
 }
