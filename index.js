@@ -2,6 +2,7 @@ const fs = require('fs');
 //const chalk = require('chalk');
 const news = require('./news.js');
 const data = require('./data.json');
+const console = require('./console.js');
 
 console.log("###############################################################################")
 console.log("#                                                                             #")
@@ -15,7 +16,7 @@ console.log("#                                                                  
 console.log("###############################################################################")
 console.log("Started")
 console.log("Version: " + data.version)
-console.log("")
+console.blankSpace()
 
 //make news directory
 fs.mkdir('./news', { recursive: true }, (err) => {
@@ -29,7 +30,7 @@ async function run() {
     try {
         a = await news.getData()
         if (a) {
-            console.log(a)
+            //console.log(a)
         } else {
             console.log("No news!")
         }
@@ -37,7 +38,7 @@ async function run() {
         console.log(e)
     }
 
-    console.log("")
+    console.blankSpace()
 }
 
 run();
