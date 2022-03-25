@@ -2,10 +2,6 @@ const fs = require('fs');
 const news = require('./news.js');
 const data = require('./data.json');
 
-for (var i = 0; i < 20; i++) {
-    console.log("")
-}
-
 console.log("###############################################################################")
 console.log("#                                                                             #")
 console.log("#                            Ukranie News Bot                                 #")
@@ -27,15 +23,22 @@ fs.mkdir('./news', { recursive: true }, (err) => {
 
 //every minute, check if news.json exists
 
-function run() {
+async function run() {
+    console.log("Grabbing news")
     try {
-        news.getData();
+        a = await news.getData()
+        if (a){
+            console.log(a)
+        } else {
+            console.log("No news!")
+        }
     } catch (err) {
         console.log(chalk.red(err));
     }
+    console.log("")
 }
 
 run();
 setInterval(() => {
     run();
-}, 60000);
+}, 15*1000);

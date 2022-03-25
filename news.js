@@ -4,33 +4,48 @@ const news = require('./news');
 const fetch = require('node-fetch');
 
 const debug = false
+const console = {
+    log: function(text) {
+        if (debug) {
+            console.log(text)
+        }
+    }
+}
 
 var newsJSON = {}
+var title = null
+var content = null
+var imageUrl = null
+var isBreaking = null
+var post_locator = null
+var updated = null
 
 async function getJSONfile() {
     newsJSON = require('./data.json');
 }
 
 async function getData() {
-    await getJSONfile();
-    var url = `https://push.api.bbci.co.uk/batch?t=%2Fdata%2Fbbc-morph-lx-commentary-data-paged%2FassetUri%2F%252Fnews%252Flive%252Fworld-europe-${newsJSON.news_url}%2FisUk%2Ffalse%2Flimit%2F20%2FnitroKey%2Flx-nitro%2FpageNumber%2F1%2FserviceName%2Fnews%2Fversion%2F1.5.6?timeout=5`;
-    //console.log(url)
-    var response = await fetch(url);
-    response.json().then(data => {
+    return new Promise(async (resolve, reject) => {
+        await getJSONfile();
+        var url = `https://push.api.bbci.co.uk/batch?t=%2Fdata%2Fbbc-morph-lx-commentary-data-paged%2FassetUri%2F%252Fnews%252Flive%252Fworld-europe-${newsJSON.news_url}%2FisUk%2Ffalse%2Flimit%2F20%2FnitroKey%2Flx-nitro%2FpageNumber%2F1%2FserviceName%2Fnews%2Fversion%2F1.5.6?timeout=5`;
+        //console.log(url)
+        var response = await fetch(url);
+        var data = await response.json();
+
         try {
             var latest = data.payload[0].body.results[0]
             if (latest["assetId"] == newsJSON.assetId) {
                 console.log("No new news")
-                return;
+                return resolve(null)
             }
             newsJSON.assetId = latest["assetId"];
 
-            var title = latest["title"];
-            var content = []
-            var imageUrl = ""
-            var isBreaking = latest["options"]["isBreakingNews"];
-            var post_locator = latest["locator"];
-            var updated = latest["lastUpdated"];
+            title = latest["title"];
+            content = []
+            imageUrl = ""
+            isBreaking = latest["options"]["isBreakingNews"];
+            post_locator = latest["locator"];
+            updated = latest["lastUpdated"];
 
             try {
                 for (imageKey in latest["media"]["images"]["body"]) {
@@ -138,6 +153,7 @@ async function getData() {
             console.log(`${isBreaking}`);
             console.log(`https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}`);
             console.log(`${updated}`);
+
             if (newsJSON.fileSaving) {
                 try {
                     var dateTime = updated.split("T");
@@ -166,13 +182,25 @@ async function getData() {
                 }
             }
 
-            //save to file
-            fs.writeFile('./data.json', JSON.stringify(newsJSON), (err) => {
-                if (err) throw err;
-                console.log('News saved to file');
-            });
+            //save newsJSON to file
+            fs.writeFileSync("./data.json", JSON.stringify(newsJSON));
+            console.log("Saved newsJSON to file")
+
+            var jsonBack = {
+                "title": title,
+                "content": content,
+                "imageUrl": imageUrl,
+                "isBreaking": isBreaking,
+                "post_locator": post_locator,
+                "updated": updated,
+                "news_url": `https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}`
+            }
+
+            //console.log(jsonBack);
+            return resolve(jsonBack)
         } catch (e) {
             console.log(e)
+            return reject(null)
         }
     });
 }
