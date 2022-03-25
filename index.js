@@ -18,6 +18,9 @@ console.log("Started")
 console.log("Version: " + data.version)
 console.blankSpace()
 
+//dont touch
+const devMode = false
+
 //make news directory
 fs.mkdir('./news', { recursive: true }, (err) => {
     if (err) throw err;
@@ -31,6 +34,7 @@ async function run() {
         a = await news.getData()
         if (a) {
             //console.log(a)
+            if (devMode) require('./infoUpdater.js')
         } else {
             console.log("No news!")
         }

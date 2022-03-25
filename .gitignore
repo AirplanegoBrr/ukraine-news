@@ -2,4 +2,7 @@ node_modules
 news
 newsJSON
 notes.txt
+temp
 package-lock.json
+infoUpdater.js
+infoTemp
