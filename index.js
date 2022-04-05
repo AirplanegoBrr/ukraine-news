@@ -3,6 +3,7 @@ const fs = require('fs');
 const news = require('./news.js');
 const data = require('./data.json');
 const console = require('./console.js');
+const app = require('./app.js')
 
 console.log("###############################################################################")
 console.log("#                                                                             #")
@@ -46,6 +47,7 @@ async function run() {
 }
 
 run();
+app.start()
 setInterval(() => {
     run();
 }, 15 * 1000);

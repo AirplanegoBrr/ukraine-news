@@ -2,7 +2,11 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "download-git-repo": "^3.0.2",
-    "node-fetch": "^2.6.1"
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "node-fetch": "^2.6.1",
+    "serve-index": "^1.9.1",
+    "socket.io": "^4.4.1"
   },
   "name": "ukrainenews",
   "version": "1.0.0",

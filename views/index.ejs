@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>News</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on('news', (data) => {
+            console.log(data);
+        });
+    </script>
+</head>
+
+
+<body>
+    <button onclick="socket.emit('fetch');">Send</button>
+</body>
+
+</html>

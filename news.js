@@ -209,7 +209,7 @@ async function getData() {
                             url: `https://www.bbc.co.uk/news/live/world-europe-${newsJSON.news_url}?pinned_post_locator=${post_locator}`,
                             updated: updated
                         }
-                        jsonTempLoading[`${DMY[2]}-${DMY[1]}-${DMY[0]}`] = jsonNewsTemp;
+                        jsonTempLoading[`${DMY[2]}-${DMY[1]}-${DMY[0]}-${updated}`] = jsonNewsTemp;
                         console.debug(jsonTempLoading)
                         console.debug(jsonNewsTemp)
                         fs.writeFileSync("./newsJSON/" + fileName, JSON.stringify(jsonTempLoading));
